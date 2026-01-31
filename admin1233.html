@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family:"Segoe UI", Arial, sans-serif;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:#020617;
+  color:#fff;
+  display:flex;
+}
+
+/* ===== LEFT: ISSUE LIST ===== */
+.left{
+  width:70%;
+  padding:30px;
+  overflow-y:auto;
+}
+
+h2{
+  margin-bottom:20px;
+}
+
+.card{
+  background:rgba(255,255,255,0.12);
+  padding:20px;
+  border-radius:15px;
+  margin-bottom:20px;
+}
+
+.card img{
+  width:100%;
+  max-height:180px;
+  object-fit:cover;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+.status{
+  margin-top:10px;
+  font-weight:bold;
+}
+
+button{
+  margin-top:10px;
+  margin-right:10px;
+  padding:8px 14px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.progress{
+  background:#facc15;
+}
+
+.resolved{
+  background:#22c55e;
+}
+
+/* ===== RIGHT: LANGUAGE PANEL ===== */
+.right{
+  width:30%;
+  padding:25px;
+  background:#020617;
+  border-left:1px solid rgba(255,255,255,0.1);
+}
+
+textarea{
+  width:100%;
+  height:120px;
+  margin-top:10px;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+}
+
+.translate-btn{
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  background:#ffcc00;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* ===== FOOTER LINKS ===== */
+.footer-links{
+  margin-top:25px;
+  text-align:center;
+}
+
+.footer-links a{
+  display:block;
+  color:#ffcc00;
+  margin-top:10px;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===== LEFT SECTION ===== -->
+<div class="left">
+  <h2>🛠 Admin – Reported Issues</h2>
+  <div id="issues"></div>
+</div>
+
+<!-- ===== RIGHT SECTION ===== -->
+<div class="right">
+  <h2>🌐 Language Converter</h2>
+  <p>English ➜ Odia</p>
+
+  <textarea id="engText" placeholder="Enter English text"></textarea>
+  <button class="translate-btn" onclick="translate()">Translate</button>
+  <textarea id="odiaText" placeholder="Odia output"></textarea>
+
+  <div class="footer-links">
+    <a href="ana.html">← Back to User Page</a>
+    <a href="aa.html">← Dashboard</a>
+  </div>
+</div>
+
+<script>
+const issuesDiv = document.getElementById("issues");
+let reports = JSON.parse(localStorage.getItem("reports")) || [];
+
+function renderIssues(){
+  issuesDiv.innerHTML = "";
+
+  reports.forEach((r, index) => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <h3>${r.issue}</h3>
+      <p><b>Location:</b> ${r.location}</p>
+      <p><b>Description:</b> ${r.description}</p>
+      <p><b>Severity:</b> ${r.severity}</p>
+      <p><b>Date:</b> ${r.date}</p>
+      <img src="${r.image}">
+      <div class="status">Status: ${r.status || "Pending"}</div>
+
+      <button class="progress" onclick="updateStatus(${index}, 'In Progress')">In Progress</button>
+      <button class="resolved" onclick="updateStatus(${index}, 'Resolved')">Resolved</button>
+    `;
+
+    issuesDiv.appendChild(card);
+  });
+}
+
+function updateStatus(index, status){
+  reports[index].status = status;
+  localStorage.setItem("reports", JSON.stringify(reports));
+  renderIssues();
+}
+
+/* ===== SIMPLE OFFLINE TRANSLATOR (Basic Demo) ===== */
+function translate(){
+  const text = document.getElementById("engText").value.toLowerCase();
+
+  const dictionary = {
+    "road": "ରାସ୍ତା",
+    "broken": "ଭଙ୍ଗା",
+    "water": "ପାଣି",
+    "light": "ବତି",
+    "issue": "ସମସ୍ୟା",
+    "resolved": "ସମାଧାନ"
+  };
+
+  let result = text;
+  for(let key in dictionary){
+    result = result.replaceAll(key, dictionary[key]);
+  }
+
+  document.getElementById("odiaText").value = result;
+}
+
+renderIssues();
+</script>
+
+</body>
+</html>

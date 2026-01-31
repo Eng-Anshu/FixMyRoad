@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Report Issue</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+/* ===== BODY ===== */
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Segoe UI", Arial, sans-serif;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+.background{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(rgba(2,6,23,0.85), rgba(2,6,23,0.85)),
+    url("ass.jpeg");
+  background-size:120%;
+  background-position:center;
+  animation:bgPan 25s ease-in-out infinite alternate;
+  z-index:-2;
+}
+
+/* subtle moving light */
+.background::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255,255,255,0.06) 50%,
+    transparent 70%
+  );
+  animation:lightMove 8s linear infinite;
+}
+
+/* ===== BACKGROUND ANIMATIONS ===== */
+@keyframes bgPan{
+  0%{
+    background-position: 0% 50%;
+    transform:scale(1);
+  }
+  100%{
+    background-position: 100% 50%;
+    transform:scale(1.12);
+  }
+}
+
+@keyframes lightMove{
+  from{ transform:translateX(-100%); }
+  to{ transform:translateX(100%); }
+}
+
+/* ===== FORM ===== */
+form{
+  width:100%;
+  max-width:520px;
+  padding:30px;
+  background:rgba(255,255,255,0.13);
+  backdrop-filter: blur(15px);
+  border-radius:18px;
+  box-shadow:0 30px 60px rgba(0,0,0,0.65);
+  animation:floatForm 6s ease-in-out infinite;
+}
+
+/* subtle floating */
+@keyframes floatForm{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-8px); }
+}
+
+h2{
+  text-align:center;
+  margin-bottom:15px;
+  letter-spacing:1px;
+}
+
+/* ===== INPUTS ===== */
+input, textarea, select, button{
+  width:100%;
+  margin-top:14px;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  font-size:14px;
+}
+
+input, textarea, select{
+  background:rgba(255,255,255,0.18);
+  color:#fff;
+  outline:none;
+}
+
+textarea{
+  resize:none;
+  height:90px;
+}
+
+input::placeholder,
+textarea::placeholder{
+  color:#e5e5e5;
+}
+
+select option{
+  color:#000;
+}
+
+/* ===== BUTTON ===== */
+button{
+  margin-top:20px;
+  background:#ffcc00;
+  font-weight:bold;
+  cursor:pointer;
+  transition:all 0.3s ease;
+}
+
+button:hover{
+  background:#ffd633;
+  transform:translateY(-2px);
+  box-shadow:0 10px 25px rgba(255,204,0,0.4);
+}
+
+/* ===== LINKS ===== */
+.links{
+  display:flex;
+  justify-content:space-between;
+  margin-top:20px;
+}
+
+.links a{
+  color:#ffcc00;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.links a:hover{
+  text-decoration:underline;
+}
+</style>
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<form id="issueForm">
+  <h2>🚧 Report an Issue</h2>
+
+  <input type="text" id="issue" placeholder="Issue Title" required>
+  <input type="text" id="location" placeholder="Location" required>
+  <textarea id="description" placeholder="Description" required></textarea>
+
+  <select id="severity">
+    <option>Low</option>
+    <option>Medium</option>
+    <option>High</option>
+  </select>
+
+  <input type="file" id="image" accept="image/*" required>
+
+  <button type="submit">Submit Issue</button>
+
+  <div class="links">
+    <a href="aa.html">Dashboard</a>
+    <a href="admin1233.html">Admin Page</a>
+  </div>
+</form>
+
+<script>
+document.getElementById("issueForm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const file = document.getElementById("image").files[0];
+  if(!file){
+    alert("Please upload an image");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(){
+    const report = {
+      issue: issue.value,
+      location: location.value,
+      description: description.value,
+      severity: severity.value,
+      date: new Date().toLocaleDateString(),
+      image: reader.result
+    };
+
+    const reports = JSON.parse(localStorage.getItem("reports")) || [];
+    reports.push(report);
+    localStorage.setItem("reports", JSON.stringify(reports));
+
+    alert("Issue submitted successfully!");
+    document.getElementById("issueForm").reset();
+  };
+
+  reader.readAsDataURL(file);
+});
+</script>
+
+</body>
+</html>
