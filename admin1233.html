@@ -15,178 +15,182 @@ body{
   min-height:100vh;
   background:#020617;
   color:#fff;
-  display:flex;
+  position: relative;
 }
 
-/* ===== LEFT: ISSUE LIST ===== */
-.left{
-  width:70%;
+/* ===== ISSUE LIST ===== */
+.container{
   padding:30px;
-  overflow-y:auto;
 }
 
 h2{
-  margin-bottom:20px;
+  margin-bottom:25px;
 }
 
 .card{
   background:rgba(255,255,255,0.12);
   padding:20px;
   border-radius:15px;
-  margin-bottom:20px;
+  margin-bottom:25px;
+  box-shadow:0 15px 35px rgba(0,0,0,0.4);
 }
 
 .card img{
   width:100%;
-  max-height:180px;
+  max-height:200px;
   object-fit:cover;
-  border-radius:10px;
-  margin-top:10px;
+  border-radius:12px;
+  margin-top:12px;
 }
 
 .status{
-  margin-top:10px;
+  margin-top:12px;
   font-weight:bold;
 }
 
+/* ===== BUTTONS ===== */
 button{
-  margin-top:10px;
+  margin-top:12px;
   margin-right:10px;
-  padding:8px 14px;
+  padding:8px 16px;
   border:none;
   border-radius:8px;
   cursor:pointer;
   font-weight:bold;
+  transition:0.3s;
 }
 
 .progress{
   background:#facc15;
 }
 
+.progress:hover{
+  background:#fde047;
+}
+
 .resolved{
   background:#22c55e;
 }
 
-/* ===== RIGHT: LANGUAGE PANEL ===== */
-.right{
-  width:30%;
-  padding:25px;
-  background:#020617;
-  border-left:1px solid rgba(255,255,255,0.1);
-}
-
-textarea{
-  width:100%;
-  height:120px;
-  margin-top:10px;
-  padding:10px;
-  border-radius:10px;
-  border:none;
-}
-
-.translate-btn{
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  background:#ffcc00;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
+.resolved:hover{
+  background:#4ade80;
 }
 
 /* ===== FOOTER LINKS ===== */
 .footer-links{
-  margin-top:25px;
+  margin-top:30px;
   text-align:center;
 }
 
 .footer-links a{
-  display:block;
+  display:inline-block;
   color:#ffcc00;
-  margin-top:10px;
+  margin:0 15px;
   text-decoration:none;
+  font-weight:500;
+}
+
+.footer-links a:hover{
+  text-decoration:underline;
+}
+
+/* ===== LANGUAGE TOGGLE BUTTON ===== */
+.lang-toggle{
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background:#ffcc00;
+  color:#020617;
+  border:none;
+  padding:12px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:18px;
+  font-weight:bold;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: 0.3s;
+}
+
+.lang-toggle:hover{
+  background:#fcd34d;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ===== LEFT SECTION ===== -->
-<div class="left">
-  <h2>🛠 Admin – Reported Issues</h2>
+<div class="container">
+    
+    
+
+  <h2 data-en="🛠 Admin – Reported Issues" data-od="🛠 ଏଡମିନ୍ – ରିପୋର୍ଟ କରାଯାଇଥିବା ସମସ୍ୟା">🛠 Admin – Reported Issues</h2>
+   <button class="lang-toggle" id="toggleLang">ଓ</button>
   <div id="issues"></div>
-</div>
-
-<!-- ===== RIGHT SECTION ===== -->
-<div class="right">
-  <h2>🌐 Language Converter</h2>
-  <p>English ➜ Odia</p>
-
-  <textarea id="engText" placeholder="Enter English text"></textarea>
-  <button class="translate-btn" onclick="translate()">Translate</button>
-  <textarea id="odiaText" placeholder="Odia output"></textarea>
 
   <div class="footer-links">
-    <a href="ana.html">← Back to User Page</a>
-    <a href="aa.html">← Dashboard</a>
+    <a href="ana.html" data-en="← Back to User Page" data-od="← ୟୁଜର୍ ପେଜ୍‌କୁ ଫେରନ୍ତୁ">← Back to User Page</a>
+    <a href="aa.html" data-en="← Dashboard" data-od="← ଡ୍ୟାଶବୋର୍ଡ୍">← Dashboard</a>
   </div>
 </div>
+
+<!-- Language toggle button -->
+
 
 <script>
 const issuesDiv = document.getElementById("issues");
 let reports = JSON.parse(localStorage.getItem("reports")) || [];
 
+// Render issues
 function renderIssues(){
   issuesDiv.innerHTML = "";
+
+  if(reports.length === 0){
+    issuesDiv.innerHTML = "<p data-en='No issues reported yet.' data-od='ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ସମସ୍ୟା ରିପୋର୍ଟ ହୋଇନାହିଁ।'>No issues reported yet.</p>";
+    return;
+  }
 
   reports.forEach((r, index) => {
     const card = document.createElement("div");
     card.className = "card";
 
     card.innerHTML = `
-      <h3>${r.issue}</h3>
-      <p><b>Location:</b> ${r.location}</p>
-      <p><b>Description:</b> ${r.description}</p>
-      <p><b>Severity:</b> ${r.severity}</p>
-      <p><b>Date:</b> ${r.date}</p>
+      <h3 data-en="${r.issue}" data-od="${r.issue}">${r.issue}</h3>
+      <p><b data-en="Location:" data-od="ସ୍ଥାନ:">Location:</b> ${r.location}</p>
+      <p><b data-en="Description:" data-od="ବିବରଣୀ:">Description:</b> ${r.description}</p>
+      <p><b data-en="Severity:" data-od="ତୀବ୍ରତା:">Severity:</b> ${r.severity}</p>
+      <p><b data-en="Date:" data-od="ତାରିଖ:">Date:</b> ${r.date}</p>
       <img src="${r.image}">
-      <div class="status">Status: ${r.status || "Pending"}</div>
+      <div class="status" data-en="Status: ${r.status || 'Pending'}" data-od="ସ୍ଥିତି: ${r.status || 'ପେଣ୍ଡିଂ'}">Status: ${r.status || 'Pending'}</div>
 
-      <button class="progress" onclick="updateStatus(${index}, 'In Progress')">In Progress</button>
-      <button class="resolved" onclick="updateStatus(${index}, 'Resolved')">Resolved</button>
+      <button class="progress" onclick="updateStatus(${index}, 'In Progress')" data-en="In Progress" data-od="ଚାଲୁଛି">In Progress</button>
+      <button class="resolved" onclick="updateStatus(${index}, 'Resolved')" data-en="Resolved" data-od="ସମାଧାନ ହୋଇଛି">Resolved</button>
     `;
 
     issuesDiv.appendChild(card);
   });
 }
 
+// Update status
 function updateStatus(index, status){
   reports[index].status = status;
   localStorage.setItem("reports", JSON.stringify(reports));
   renderIssues();
 }
 
-/* ===== SIMPLE OFFLINE TRANSLATOR (Basic Demo) ===== */
-function translate(){
-  const text = document.getElementById("engText").value.toLowerCase();
+// Language toggle
+let isOdia = false;
+document.getElementById("toggleLang").addEventListener("click", ()=>{
+  isOdia = !isOdia;
 
-  const dictionary = {
-    "road": "ରାସ୍ତା",
-    "broken": "ଭଙ୍ଗା",
-    "water": "ପାଣି",
-    "light": "ବତି",
-    "issue": "ସମସ୍ୟା",
-    "resolved": "ସମାଧାନ"
-  };
+  // Change all elements with data-en and data-od
+  document.querySelectorAll("[data-en]").forEach(el=>{
+    el.textContent = isOdia ? el.getAttribute("data-od") : el.getAttribute("data-en");
+  });
 
-  let result = text;
-  for(let key in dictionary){
-    result = result.replaceAll(key, dictionary[key]);
-  }
-
-  document.getElementById("odiaText").value = result;
-}
+  // Update button icon
+  document.getElementById("toggleLang").textContent = isOdia ? "EN" : "ଓ";
+});
 
 renderIssues();
 </script>

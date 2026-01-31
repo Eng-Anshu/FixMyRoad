@@ -5,11 +5,8 @@
 <title>Report Issue</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{ box-sizing:border-box; }
 
-/* ===== BODY ===== */
 body{
   margin:0;
   min-height:100vh;
@@ -21,7 +18,23 @@ body{
   overflow:hidden;
 }
 
-/* ===== ANIMATED BACKGROUND ===== */
+/* ===== LANGUAGE BUTTON ===== */
+.lang-btn{
+  position:absolute;
+  top:20px;
+  right:20px;
+  padding:8px 14px;
+  border-radius:20px;
+  height:60px;
+  width:70px;
+  border:none;
+  cursor:pointer;
+  background:#ffcc00;
+  font-weight:bold;
+  z-index:10;
+}
+
+/* ===== BACKGROUND ===== */
 .background{
   position:absolute;
   inset:0;
@@ -34,35 +47,9 @@ body{
   z-index:-2;
 }
 
-/* subtle moving light */
-.background::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(
-    120deg,
-    transparent 30%,
-    rgba(255,255,255,0.06) 50%,
-    transparent 70%
-  );
-  animation:lightMove 8s linear infinite;
-}
-
-/* ===== BACKGROUND ANIMATIONS ===== */
 @keyframes bgPan{
-  0%{
-    background-position: 0% 50%;
-    transform:scale(1);
-  }
-  100%{
-    background-position: 100% 50%;
-    transform:scale(1.12);
-  }
-}
-
-@keyframes lightMove{
-  from{ transform:translateX(-100%); }
-  to{ transform:translateX(100%); }
+  from{ transform:scale(1); }
+  to{ transform:scale(1.12); }
 }
 
 /* ===== FORM ===== */
@@ -74,67 +61,34 @@ form{
   backdrop-filter: blur(15px);
   border-radius:18px;
   box-shadow:0 30px 60px rgba(0,0,0,0.65);
-  animation:floatForm 6s ease-in-out infinite;
-}
-
-/* subtle floating */
-@keyframes floatForm{
-  0%,100%{ transform:translateY(0); }
-  50%{ transform:translateY(-8px); }
 }
 
 h2{
   text-align:center;
   margin-bottom:15px;
-  letter-spacing:1px;
 }
 
-/* ===== INPUTS ===== */
 input, textarea, select, button{
   width:100%;
   margin-top:14px;
   padding:12px;
   border-radius:10px;
   border:none;
-  font-size:14px;
 }
 
 input, textarea, select{
   background:rgba(255,255,255,0.18);
   color:#fff;
-  outline:none;
 }
 
-textarea{
-  resize:none;
-  height:90px;
-}
+textarea{ height:90px; resize:none; }
 
-input::placeholder,
-textarea::placeholder{
-  color:#e5e5e5;
-}
-
-select option{
-  color:#000;
-}
-
-/* ===== BUTTON ===== */
 button{
-  margin-top:20px;
   background:#ffcc00;
   font-weight:bold;
   cursor:pointer;
-  transition:all 0.3s ease;
 }
 
-button:hover{
-  background:#ffd633;
-  transform:translateY(-2px);
-  box-shadow:0 10px 25px rgba(255,204,0,0.4);
-}
-
-/* ===== LINKS ===== */
 .links{
   display:flex;
   justify-content:space-between;
@@ -144,21 +98,21 @@ button:hover{
 .links a{
   color:#ffcc00;
   text-decoration:none;
-  font-size:14px;
-}
+  
 
-.links a:hover{
-  text-decoration:underline;
 }
 </style>
 </head>
 
 <body>
 
+
+
 <div class="background"></div>
 
 <form id="issueForm">
-  <h2>🚧 Report an Issue</h2>
+    <button class="lang-btn" onclick="toggleLanguage()">ଓଡ଼ିଆ</button>
+  <h2 id="title">🚧 Report an Issue</h2>
 
   <input type="text" id="issue" placeholder="Issue Title" required>
   <input type="text" id="location" placeholder="Location" required>
@@ -172,46 +126,61 @@ button:hover{
 
   <input type="file" id="image" accept="image/*" required>
 
-  <button type="submit">Submit Issue</button>
+  <button type="submit" id="submitBtn">Submit Issue</button>
 
   <div class="links">
-    <a href="aa.html">Dashboard</a>
-    <a href="admin1233.html">Admin Page</a>
+    <a href="aa.html" id="dash">Dashboard</a>
+    <a href="admin1233.html" id="admin">Admin Page</a>
   </div>
 </form>
 
 <script>
-document.getElementById("issueForm").addEventListener("submit", function(e){
-  e.preventDefault();
+let isOdia = false;
 
-  const file = document.getElementById("image").files[0];
-  if(!file){
-    alert("Please upload an image");
-    return;
+const text = {
+  en:{
+    title:"🚧 Report an Issue",
+    issue:"Issue Title",
+    location:"Location",
+    description:"Description",
+    submit:"Submit Issue",
+    dash:"Dashboard",
+    admin:"Admin Page",
+    low:"Low",
+    medium:"Medium",
+    high:"High"
+  },
+  od:{
+    title:"🚧 ସମସ୍ୟା ରିପୋର୍ଟ କରନ୍ତୁ",
+    issue:"ସମସ୍ୟା ଶୀର୍ଷକ",
+    location:"ସ୍ଥାନ",
+    description:"ବିବରଣୀ",
+    submit:"ସମସ୍ୟା ଦାଖଲ କରନ୍ତୁ",
+    dash:"ଡ୍ୟାସବୋର୍ଡ",
+    admin:"ପ୍ରଶାସକ ପୃଷ୍ଠା",
+    low:"ନିମ୍ନ",
+    medium:"ମଧ୍ୟମ",
+    high:"ଉଚ୍ଚ"
   }
+};
 
-  const reader = new FileReader();
+function toggleLanguage(){
+  isOdia = !isOdia;
+  const lang = isOdia ? "od" : "en";
 
-  reader.onload = function(){
-    const report = {
-      issue: issue.value,
-      location: location.value,
-      description: description.value,
-      severity: severity.value,
-      date: new Date().toLocaleDateString(),
-      image: reader.result
-    };
+  document.querySelector(".lang-btn").innerText = isOdia ? "English" : "ଓଡ଼ିଆ";
+  title.innerText = text[lang].title;
+  issue.placeholder = text[lang].issue;
+  location.placeholder = text[lang].location;
+  description.placeholder = text[lang].description;
+  submitBtn.innerText = text[lang].submit;
+  dash.innerText = text[lang].dash;
+  admin.innerText = text[lang].admin;
 
-    const reports = JSON.parse(localStorage.getItem("reports")) || [];
-    reports.push(report);
-    localStorage.setItem("reports", JSON.stringify(reports));
-
-    alert("Issue submitted successfully!");
-    document.getElementById("issueForm").reset();
-  };
-
-  reader.readAsDataURL(file);
-});
+  severity.options[0].text = text[lang].low;
+  severity.options[1].text = text[lang].medium;
+  severity.options[2].text = text[lang].high;
+}
 </script>
 
 </body>
